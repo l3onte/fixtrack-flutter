@@ -1,9 +1,10 @@
 import * as ui from "./ui.js";
 import * as poll from "./poll.js";
+import * as utils from "./utils.js";
 
 let pollCreatedCount = 0;
 let totalVotedCount = 0;
-let ActivePolls = 0;
+let activePolls = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
     ui.newPollButton.addEventListener("click", () => {
@@ -12,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
         document.querySelector(".reset-button").addEventListener("click", (event) => {
             event.preventDefault();
-            ui.reset();
+            utils.reset();
         });
 
         document.querySelector(".send-button").addEventListener("click", (event) => {
@@ -20,12 +21,38 @@ document.addEventListener("DOMContentLoaded", () => {
             const pollName = document.querySelector("#poll-name-input").value
             const cantOfOptions = parseInt(document.querySelector("#poll-options").value);
             
-            if (cantOfOptions > 0 && cantOfOptions <= 5) {
-                ui.createFormOptions(pollName, cantOfOptions);
-            } else {
-                alert("Por favor, ingresa un numero valido entre 1 y 5");
+            if (isNaN(cantOfOptions) || cantOfOptions < 1 || cantOfOptions > 5) {
+                alert("Please enter a valid number of options between 1 and 5.");
+                return;
             }
 
+            ui.createFormOptions(pollName, cantOfOptions);
         });
+    });
+
+    ui.main.addEventListener("click", (event) => {
+        if (event.target.classList.contains("create-button")) {
+            event.preventDefault();
+
+            const inputs = document.querySelectorAll(".poll-input[id^='option-']");
+
+            if (!inputs.length) {
+                alert("No options found. Please enter some options first.");
+                return;
+            }
+
+            const options = [];
+            inputs.forEach(input => {
+                const value = input?.value?.trim();
+                if (value) {
+                    options.push(value);
+                }
+            });
+
+            ui.createPoll(options);
+
+            pollCreatedCount++;
+            activePolls++;
+        }
     });
 });
