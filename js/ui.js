@@ -1,3 +1,5 @@
+import * as utils from "./utils.js";
+
 export const newPollButton = document.querySelector(".new-poll-button");
 export const main = document.querySelector("main");
 
@@ -13,7 +15,7 @@ export function createForm() {
                     <input class="poll-input" id="poll-options" type="number" placeholder="max 5">
                     <div class="form-buttons">
                         <button class="reset-button form-button">Reset</button>
-                        <input type="submit" class="send-button form-button" value="Send"> 
+                        <input type="button" class="send-button form-button" value="Send"> 
                     </div>
                 </div> 
             </form>
@@ -21,19 +23,13 @@ export function createForm() {
     `;
 }
 
-export function reset() {
-    const inputs = document.getElementsByClassName("poll-input");
-
-    for (let i = 0; i < inputs.length; i++) {
-        inputs[i].value = "";
-    }
-}
-
 export function createFormOptions(pollName, pollCantOfOptions) {
-    document.querySelector(".poll-form-subtitle").textContent = `${pollName} Poll`;
+    utils.changeSubtitle(pollName);
+
     const sendButton = document.querySelector(".send-button");
-    sendButton.value = "Create";
-    sendButton.classList.replace("send-button", "create-button");
+    sendButton.outerHTML = `
+        <input type="button" class="create-button form-button" value="create">
+    `;
 
     const nameInput = document.querySelector("#poll-name-input");
     const nameLabel = document.querySelector('label[for="poll-name-input"]');
@@ -49,12 +45,29 @@ export function createFormOptions(pollName, pollCantOfOptions) {
     for (let i = 0; i < pollCantOfOptions; i++) {
         optionsHTML += `
             <label for="option-${i+1}">Option ${i+1}</label>
-            <input type="text" class="poll-input" id="option-${i+1}" name="option-${i+1}" placeholder="Option ${i+1}">
+            <input type="text" class="poll-input poll-option-input" id="option-${i+1}" name="option-${i+1}" placeholder="Option ${i+1}">
         `;
     }
 
-    const pollForm = document.querySelector(".poll-form");
-    const formButtons = pollForm.querySelector(".form-buttons");
+    utils.updateFormInputs(optionsHTML);
+}
 
-    formButtons.insertAdjacentHTML("beforebegin", optionsHTML);
+export function createPoll(options) {
+    document.querySelectorAll("label[for^='option-']").forEach(label => label.remove());
+    document.querySelectorAll(".poll-option-input").forEach(input => input.remove());
+    const sendButton = document.querySelector(".create-button");
+    sendButton.outerHTML = `
+        <input type="button" class="vote-button form-button" value="Vote">
+    `;
+    
+    let optionHTML = "";
+    for (let i = 0; i < options.length; i++) {
+        optionHTML += `
+            <label for="option-${i+1}" class="poll-label"> ${options[i]}
+                <input type="checkbox" id="option-${i+1} class="poll-checkbox">
+            </label>
+        `;
+    }
+
+    utils.updateFormInputs(optionHTML);
 }
