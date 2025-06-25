@@ -1,3 +1,11 @@
+export function deleteAClassElements(element) {
+    const elementClass = document.querySelectorAll(`.${element}`);
+
+    elementClass.forEach(item => {
+        item.remove();
+    });
+}
+
 export function changeSubtitle(text) {
     document.querySelector(".poll-form-subtitle").textContent = text;
 }
