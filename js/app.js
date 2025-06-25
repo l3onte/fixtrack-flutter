@@ -49,10 +49,35 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
+            poll.pollData.name = document.querySelector(".poll-form-subtitle").textContent;
+            poll.pollData.options = options.map(opt => ({ label: opt, votes: 0 }));
+
             ui.createPoll(options);
 
             pollCreatedCount++;
             activePolls++;
         }
+    });
+
+    ui.main.addEventListener("click", (event) => {
+        if (event.target.classList.contains("vote-button")) {
+            event.preventDefault();
+
+            const selected = document.querySelector('input[name="poll-options"]:checked');
+            if (!selected) {
+                alert("Por favor, selecciona una opción antes de votar.")
+            };
+
+            const votedOption = selected.value;
+            
+            const option = poll.pollData.options.find(opt => opt.label === votedOption);
+            if (option) {
+                option.votes++;
+                totalVotedCount++;
+                ui.resultsForm();
+            }
+
+            event.target.disabled = true;
+        };
     });
 });
