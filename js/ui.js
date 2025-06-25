@@ -1,4 +1,5 @@
 import * as utils from "./utils.js";
+import * as poll from "./poll.js";
 
 export const newPollButton = document.querySelector(".new-poll-button");
 export const main = document.querySelector("main");
@@ -55,6 +56,7 @@ export function createFormOptions(pollName, pollCantOfOptions) {
 export function createPoll(options) {
     document.querySelectorAll("label[for^='option-']").forEach(label => label.remove());
     document.querySelectorAll(".poll-option-input").forEach(input => input.remove());
+
     const sendButton = document.querySelector(".create-button");
     sendButton.outerHTML = `
         <input type="button" class="vote-button form-button" value="Vote">
@@ -64,10 +66,24 @@ export function createPoll(options) {
     for (let i = 0; i < options.length; i++) {
         optionHTML += `
             <label for="option-${i+1}" class="poll-label"> ${options[i]}
-                <input type="checkbox" id="option-${i+1} class="poll-checkbox">
+                <input type="radio" id="option-${i+1}" name="poll-options" class="poll-radio" value="${options[i]}">
             </label>
         `;
     }
 
     utils.updateFormInputs(optionHTML);
+}
+
+export function resultsForm() {
+    utils.deleteAClassElements("poll-label");
+    utils.deleteAClassElements("poll-radio");
+    utils.deleteAClassElements("form-button");
+
+    const resultsHTML = poll.calcPercentage();
+
+    let innerHTML = `
+        ${resultsHTML}
+    `;
+
+    utils.updateFormInputs(innerHTML);
 }
